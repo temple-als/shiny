@@ -19,6 +19,7 @@ ui <- page_sidebar(
       shinyjs::hidden(
         card(
           id = "manual",
+          input_switch("manual_barcode", value = TRUE, "Barcodes?"),
           textAreaInput(
             "label1",
             rows = 3,
@@ -237,7 +238,12 @@ server <- function(input, output, session) {
           val, # nolint: object_usage_linter.
           gp = grid::gpar(col = "black", fontsize = 5)
         )
-        plots[[i]] <- qr + label_text + plot_layout(nrow = 2)
+        if (shiny::isTruthy(input$manual_barcode)) {
+          plots[[i]] <- qr + label_text + plot_layout(nrow = 2)
+        } else {
+          # show just text and center it no barcode
+          plots[[i]] <- ggplotify::as.ggplot(label_text) + plot_layout(nrow = 1)
+        }
       } else {
         plots[[i]] <- ggplot2::ggplot() +
           ggplot2::theme_void()
@@ -417,19 +423,27 @@ server <- function(input, output, session) {
   })
   output$manual_plot1 <- renderPlot({
     req(input$label1)
-    plot(manual()$qrs$lab1)
+    if (input$manual_barcode == TRUE) {
+      plot(manual()$qrs$lab1)
+    }
   })
   output$manual_plot2 <- renderPlot({
     req(input$label2)
-    plot(manual()$qrs$lab2)
+    if (input$manual_barcode == TRUE) {
+      plot(manual()$qrs$lab2)
+    }
   })
   output$manual_plot3 <- renderPlot({
     req(input$label3)
-    plot(manual()$qrs$lab3)
+    if (input$manual_barcode == TRUE) {
+      plot(manual()$qrs$lab3)
+    }
   })
   output$manual_plot4 <- renderPlot({
     req(input$label4)
-    plot(manual()$qrs$lab4)
+    if (input$manual_barcode == TRUE) {
+      plot(manual()$qrs$lab4)
+    }
   })
   output$man_lab1 <- renderText({
     req(input$label1)
